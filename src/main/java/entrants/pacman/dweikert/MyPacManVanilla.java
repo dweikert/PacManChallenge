@@ -49,7 +49,7 @@ public class MyPacManVanilla extends PacmanController {
 	        	System.out.println("Average: " + stats[0].getAverage());
 	        	
 	        	highest = (stats[0].getAverage() > highest) ? stats[0].getAverage() : highest;
-	        	weightVectors.get(i)[80] =  stats[0].getAverage();
+	        	weightVectors.get(i)[weightVectors.get(i).length-1] =  stats[0].getAverage();
 	        	currentWeight++;
 	        	System.out.println("highest: "  + highest);
 	        }
@@ -68,12 +68,12 @@ public class MyPacManVanilla extends PacmanController {
         writeWeights(weightVectors, "trainedweights");
         
        
-   	    */   
-        
+   	     
+        */
        
        weightVectors = readWeights("trainedweights");
        currentWeight=0;
-       System.out.println("current weight fitness: " + weightVectors.get(currentWeight)[80] );
+       System.out.println("current weight fitness: " + weightVectors.get(currentWeight)[weightVectors.get(currentWeight).length-1] );
        po.runGame(new MyPacManVanilla(), new POCommGhosts(50), true, 40);
        
       
