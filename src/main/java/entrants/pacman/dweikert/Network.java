@@ -9,7 +9,6 @@ public class Network {
 	protected int inputCount;
 	protected int hiddenCount;
 	protected int weightCount; 
-	protected double fire[];
 	protected double weights[];	
 	protected double outputs[];
 
@@ -21,9 +20,7 @@ public class Network {
 	 *
 	 * @param inputCount The number of input neurons.
 	 * @param hiddenCount The number of hidden neurons
-	 * @param outputCount The number of output neurons
-	 * @param learnRate The learning rate to be used when training.
-	 * @param momentum The momentum to be used when training.
+	 * @param _weights[] The weight vector for the network
 	 */
 	 public Network(int inputCount, int hiddenCount, double _weights[])
 	 {
@@ -33,10 +30,7 @@ public class Network {
 		  this.weights = _weights;		  
 		  weightCount = hiddenCount * (inputCount+1);
 		  int neuronCount = inputCount + hiddenCount + 1;
-		  this.outputs = new double[neuronCount];
-		  fire    = new double[neuronCount];
-		  
-		  
+		  this.outputs = new double[neuronCount];	  
 		  
 	 }
 	
@@ -55,9 +49,9 @@ public class Network {
 	
 	 
 	 /**
-	  * Compute the output for a given input to the neural network.
+	  * Compute the output of the neural network.
 	  *
-	  * @param input The input provide to the neural network.
+	  * @param input The input to the neural network.
 	  * @return The results from the output neurons.
 	  */
 	 public double propagateNetwork(int input[]){
@@ -79,7 +73,7 @@ public class Network {
 				 weightIndex++;
 			 }
 			 outputs[i]=fire(sum);
-		 }
+		 } 
 		 //compute final output
 		 double sum = 0;
 		 for(i= hiddenIndex; i<outIndex; i++) {

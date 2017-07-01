@@ -7,21 +7,25 @@ public class GeneticOperators {
 	
 	
 	public static void evolve(List<double[]> weightVectors) {
+		int nWeightVectors = weightVectors.size();
 		
-		//kill:
-		System.out.println("Size before kill: " + weightVectors.size());
-		for(int i = 99; i>=70; i--){
+		//kill 30 worst Vectors:
+		System.out.println("Size before termination: " + nWeightVectors);
+		for(int i = nWeightVectors-1; i>=nWeightVectors-30; i--){
 			weightVectors.remove(i);
 		}
 		
-		
+		nWeightVectors = weightVectors.size();
 		
 		// reproduce:
-		System.out.println("Size before reproduce: " + weightVectors.size());
+		System.out.println("Size before reproduction: " + nWeightVectors);
+		int weightLength = weightVectors.get(0).length;
+		System.out.println("Size of each gene (incl. fitness: " + weightLength);
 		for(int i = 0; i<30; i=i+2) {
-			double[] child1 = new double[81];
-			double[] child2 = new double[81];
-			for (int j=0; j<40; j++){
+			//from 2 parents generate 2 children by recombining the parents first and second halves
+			double[] child1 = new double[weightLength];
+			double[] child2 = new double[weightLength];
+			for (int j=0; j<(weightLength-1)/2; j++){
 				child1[j] = weightVectors.get(i)[j];
 				child1[child1.length-(j+1)] = weightVectors.get(i+1)[child1.length-(j+1)];
 				child2[j] = weightVectors.get(i+1)[j];
@@ -33,8 +37,9 @@ public class GeneticOperators {
 		
 		//mutate children:
 		System.out.println("Size before mutation: " + weightVectors.size());
-		for(int i = 70; i<weightVectors.size(); i++) {
-			for (int j = i; j<80; j++){
+		for(int i = 70; i<nWeightVectors; i++) {
+			for (int j = i; j<weightLength-1; j++){
+				//with a chance of 10% mutate each gene by adding/subtracting(equal chance) a random value between 0 and 1
 				double mutationfactor = ThreadLocalRandom.current().nextDouble(0, 1);
 				if(mutationfactor < 0.1) {
 					double sign = ThreadLocalRandom.current().nextInt(-1, 1);

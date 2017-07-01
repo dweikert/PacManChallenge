@@ -34,7 +34,7 @@ public class MyPacManVanilla extends PacmanController {
     	Executor po = new Executor(true, true, true);
         po.setDaemon(true);
        
-        
+        /*
         //training routine
         int generations = 0;
         weightVectors = readWeights("initialweights");
@@ -45,7 +45,7 @@ public class MyPacManVanilla extends PacmanController {
 	        for(int i = 0; i<weightVectors.size();i++){
 	        	Stats stats[];        	
 	        	String s = "testing weight " + i + " gen " + generations;
-	        	stats = po.runExperiment(new MyPacManVanilla(), new POCommGhosts(50), 5, s);
+	        	stats = po.runExperiment(new MyPacManVanilla(), new POCommGhosts(50), 10, s);
 	        	System.out.println("Average: " + stats[0].getAverage());
 	        	
 	        	highest = (stats[0].getAverage() > highest) ? stats[0].getAverage() : highest;
@@ -68,7 +68,7 @@ public class MyPacManVanilla extends PacmanController {
         writeWeights(weightVectors, "trainedweights");
         
        
-   	       
+   	    */   
         
        
        weightVectors = readWeights("trainedweights");
@@ -144,7 +144,7 @@ public class MyPacManVanilla extends PacmanController {
     	MOVE[] myMoves = game.getPossibleMoves(myNodeIndex);
     	
     	double weights[] = MyPacManVanilla.weightVectors.get(currentWeight);
-    	Network net = new Network(7, 10, weights);
+    	Network net = new Network(7, 12, weights);
     	double moveValue[] = new double[myMoves.length];
     	//moveValue[moveValue.length-1] = Double.MIN_VALUE;
     	int currentMove = 0;
@@ -165,7 +165,9 @@ public class MyPacManVanilla extends PacmanController {
     		int ghostEdible;
     		int distToPill;
     		int turnAround;
+    		int ghostState;
     		boolean isFirstPill;
+			MOVE lastMove = game.getPacmanLastMoveMade();
     		//get Ghost positions
     		
 			for(GHOST ghost : GHOST.values()){
@@ -181,6 +183,7 @@ public class MyPacManVanilla extends PacmanController {
     				nGhostsInDir = 0;
     				distToGhost = 0;
     				ghostEdible = 0;
+    				ghostState = 0;
     				isFirstPill = true;
     				distToPill = 0;
     				turnAround = 0;
@@ -206,6 +209,13 @@ public class MyPacManVanilla extends PacmanController {
 	    						if(nGhostsInDir ==1) {
 	    							distToGhost = (int) Math.floor(game.getDistance(myNodeIndex, nextNodeIndex, DM.MANHATTAN));
 	    							ghostEdible = game.getGhostEdibleTime(GHOST.values()[i]);
+	    							if (game.isGhostEdible(GHOST.values()[i])) {
+	    								ghostState = 1;
+	    							}
+	    							else {
+	    								ghostState = -1;
+	    							}
+	    							
 	    						}    								
 	    								
 	    					}
@@ -226,17 +236,17 @@ public class MyPacManVanilla extends PacmanController {
     					nextNodeIndex = game.getNeighbour(nextNodeIndex, MOVE.UP);    					
     				}
     				if(lastMove!= null){
-    					if (tmp == lastMove){
+    					if (tmp == lastMove.opposite()){
             				turnAround = 1;
             			}	
         				
     				}
     				
     				inputs[0] = nPillsInDir;
-					inputs[1] = 0;
-					inputs[2] = distToPill;
-					inputs[3] = distToPowerPill;
-					inputs[4] = distToGhost;
+					inputs[1] = distToPill;
+					inputs[2] = distToPowerPill;
+					inputs[3] = distToGhost;
+					inputs[4] = ghostState;
 					inputs[5] = ghostEdible;
 					inputs[6] = turnAround;
 					moveValue[currentMove] = net.propagateNetwork(inputs);
@@ -252,6 +262,7 @@ public class MyPacManVanilla extends PacmanController {
     				nGhostsInDir = 0;
     				distToGhost = 0;
     				ghostEdible = 0;
+    				ghostState = 0;
     				isFirstPill = true;
     				distToPill = 0;
     				turnAround = 0;
@@ -277,6 +288,12 @@ public class MyPacManVanilla extends PacmanController {
 	    						if(nGhostsInDir ==1) {
 	    							distToGhost = (int) Math.floor(game.getDistance(myNodeIndex, nextNodeIndex, DM.MANHATTAN));
 	    							ghostEdible = game.getGhostEdibleTime(GHOST.values()[i]);
+	    							if (game.isGhostEdible(GHOST.values()[i])) {
+	    								ghostState = 1;
+	    							}
+	    							else {
+	    								ghostState = -1;
+	    							}
 	    						}    								
 	    								
 	    					}
@@ -297,19 +314,19 @@ public class MyPacManVanilla extends PacmanController {
     					nextNodeIndex = game.getNeighbour(nextNodeIndex, MOVE.RIGHT);    					
     				}    
     				if(lastMove!= null){
-    					if (tmp == lastMove){
+    					if (tmp == lastMove.opposite()){
             				turnAround = 1;
             			}	
         				
     				}
     				
     				inputs[0] = nPillsInDir;
-					inputs[1] = 0;
-					inputs[2] = distToPill;
-					inputs[3] = distToPowerPill;
-					inputs[4] = distToGhost;
+					inputs[1] = distToPill;
+					inputs[2] = distToPowerPill;
+					inputs[3] = distToGhost;
+					inputs[4] = ghostState;
 					inputs[5] = ghostEdible;
-					inputs[6] = turnAround;   					
+					inputs[6] = turnAround; 					
 					moveValue[currentMove] = net.propagateNetwork(inputs);
 					currentMove++;
 					break;
@@ -321,6 +338,7 @@ public class MyPacManVanilla extends PacmanController {
     				nGhostsInDir = 0;
     				distToGhost = 0;
     				ghostEdible = 0;
+    				ghostState = 0;
     				isFirstPill = true;
     				distToPill = 0;
     				turnAround = 0;
@@ -346,6 +364,12 @@ public class MyPacManVanilla extends PacmanController {
 	    						if(nGhostsInDir ==1) {
 	    							distToGhost = (int) Math.floor(game.getDistance(myNodeIndex, nextNodeIndex, DM.MANHATTAN));
 	    							ghostEdible = game.getGhostEdibleTime(GHOST.values()[i]);
+	    							if (game.isGhostEdible(GHOST.values()[i])) {
+	    								ghostState = 1;
+	    							}
+	    							else {
+	    								ghostState = -1;
+	    							}
 	    						}    								
 	    								
 	    					}
@@ -367,19 +391,19 @@ public class MyPacManVanilla extends PacmanController {
     					
     				}
     				if(lastMove!= null){
-    					if (tmp == lastMove){
+    					if (tmp == lastMove.opposite()){
             				turnAround = 1;
             			}	
         				
     				}
     				
     				inputs[0] = nPillsInDir;
-					inputs[1] = 0;
-					inputs[2] = distToPill;
-					inputs[3] = distToPowerPill;
-					inputs[4] = distToGhost;
+					inputs[1] = distToPill;
+					inputs[2] = distToPowerPill;
+					inputs[3] = distToGhost;
+					inputs[4] = ghostState;
 					inputs[5] = ghostEdible;
-					inputs[6] = turnAround; 					
+					inputs[6] = turnAround;					
 					moveValue[currentMove] = net.propagateNetwork(inputs);
 					currentMove++;
 					break;
@@ -391,6 +415,7 @@ public class MyPacManVanilla extends PacmanController {
     				nGhostsInDir = 0;
     				distToGhost = 0;
     				ghostEdible = 0;
+    				ghostState = 0;
     				isFirstPill = true;
     				distToPill = 0;
     				turnAround = 0;
@@ -416,6 +441,12 @@ public class MyPacManVanilla extends PacmanController {
 	    						if(nGhostsInDir ==1) {
 	    							distToGhost = (int) Math.floor(game.getDistance(myNodeIndex, nextNodeIndex, DM.MANHATTAN));
 	    							ghostEdible = game.getGhostEdibleTime(GHOST.values()[i]);
+	    							if (game.isGhostEdible(GHOST.values()[i])) {
+	    								ghostState = 1;
+	    							}
+	    							else {
+	    								ghostState = -1;
+	    							}
 	    						}    								
 	    								
 	    					}
@@ -436,19 +467,19 @@ public class MyPacManVanilla extends PacmanController {
     					nextNodeIndex = game.getNeighbour(nextNodeIndex, MOVE.DOWN);    					
     					}
     				if(lastMove!= null){
-    					if (tmp == lastMove){
+    					if (tmp == lastMove.opposite()){
             				turnAround = 1;
             			}	
         				
     				}
     				
     				inputs[0] = nPillsInDir;
-					inputs[1] = 0;
-					inputs[2] = distToPill;
-					inputs[3] = distToPowerPill;
-					inputs[4] = distToGhost;
+					inputs[1] = distToPill;
+					inputs[2] = distToPowerPill;
+					inputs[3] = distToGhost;
+					inputs[4] = ghostState;
 					inputs[5] = ghostEdible;
-					inputs[6] = turnAround;   					
+					inputs[6] = turnAround;					
 					moveValue[currentMove] = net.propagateNetwork(inputs);
 					currentMove++;
 					break;
