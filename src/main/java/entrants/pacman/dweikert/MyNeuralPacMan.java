@@ -3,13 +3,20 @@ package entrants.pacman.dweikert;
 import java.io.*;
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.EnumMap;
 import java.util.List;
 import java.util.Random;
 import java.util.concurrent.ThreadLocalRandom;
 
+import entrants.ghosts.dweikert.NeuralGhosts;
+import examples.StarterGhost.Blinky;
+import examples.StarterGhostComm.POCommGhost;
 import pacman.Executor;
+import pacman.controllers.IndividualGhostController;
+import pacman.controllers.MASController;
 import pacman.controllers.PacmanController;
 import pacman.controllers.examples.po.POCommGhosts;
+import pacman.game.Constants;
 import pacman.game.Constants.DM;
 import pacman.game.Constants.GHOST;
 import pacman.game.Constants.MOVE;
@@ -23,40 +30,49 @@ import pacman.game.Game;
  */
 
 
-public class MyPacManVanilla extends PacmanController {
+public class MyNeuralPacMan extends PacmanController {
     private MOVE myMove = MOVE.NEUTRAL;
-    static int currentWeight = 0; 
-    static List<double[]> weightVectors;
-    
+    public static int currentWeightPacman = 0; 
+    public static int currentWeightGhosts = 0;
+    public static List<double[]> weightVectorsPacman;
+    public static List<double[]> weightVectorsGhosts;
+    static int generations;
+
     public static void main(String[] args) {
+    
+    	
     	
     	
     	Executor po = new Executor(true, true, true);
         po.setDaemon(true);
-       
+        
+        
         /*
-        //training routine
-        int generations = 0;
-        weightVectors = readWeights("initialweights");
-        writeWeights(weightVectors, "initialweights");
-        while(generations < 50) {
+        //training routine pacman (not functional any longer as the best weights are now hardcoded in the respective methods.
+         * simply here for documentational purposes
+        generations = 0;
+        weightVectorsPacman = WeightIO.readWeights("initialweights");
+        weightVectorsGhosts = WeightIO.readWeights("initialweights");
+        WeightIO.writeWeights(weightVectorsPacman, "initialweights");
+        while(generations < 2000) {
 	        double highest = 0;
-	        currentWeight = 0;
-	        for(int i = 0; i<weightVectors.size();i++){
+	        currentWeightPacman = 0;
+	        currentWeightGhosts = 0;
+	        for(int i = 0; i<weightVectorsPacman.size();i++){
 	        	Stats stats[];        	
 	        	String s = "testing weight " + i + " gen " + generations;
 	        	stats = po.runExperiment(new MyPacManVanilla(), new POCommGhosts(50), 10, s);
 	        	System.out.println("Average: " + stats[0].getAverage());
 	        	
 	        	highest = (stats[0].getAverage() > highest) ? stats[0].getAverage() : highest;
-	        	weightVectors.get(i)[weightVectors.get(i).length-1] =  stats[0].getAverage();
-	        	currentWeight++;
+	        	weightVectorsPacman.get(i)[weightVectorsPacman.get(i).length-1] =  stats[0].getAverage();
+	        	currentWeightPacman++;
 	        	System.out.println("highest: "  + highest);
 	        }
 	        System.out.println("generation " + generations);
-	        WeightSort.sort(weightVectors);
-	        GeneticOperators.evolve(weightVectors);
-	        System.out.println("size: " + weightVectors.size());
+	        WeightSort.sort(weightVectorsPacman);
+	        GeneticOperators.evolve(weightVectorsPacman);
+	        System.out.println("size: " + weightVectorsPacman.size());
 	        try {
 				Thread.sleep(2000);
 			} catch (InterruptedException e) {
@@ -65,63 +81,53 @@ public class MyPacManVanilla extends PacmanController {
 			}
 	        generations++;
         }
-        writeWeights(weightVectors, "trainedweights");
+        WeightIO.writeWeights(weightVectorsPacman, "trainedweights");
+        */
+        
+   	   /*
+       //training routine ghosts(not functional any longer as the best weights are now hardcoded in the respective methods.
+         * simply here for documentational purposes
+        generations = 0;
+        weightVectorsPacman = WeightIO.readWeights("trainedweights");
+        weightVectorsGhosts = WeightIO.readWeights("trainedghostweights");
+        while(generations < 20) {
+	        double highest = -9999;
+	        currentWeightPacman = 0;
+	        currentWeightGhosts = 0;
+	        for(int i = 0; i<weightVectorsGhosts.size();i++){
+	        	Stats stats[];        	
+	        	String s = "testing weight " + i + " gen " + generations;
+	        	stats = po.runExperiment(new MyPacManVanilla(), NeuralGhosts.neuralGhostController(), 3, s);
+	        	System.out.println("Average: " + -stats[0].getAverage());
+	        	
+	        	highest = (-stats[0].getAverage() > highest) ? -stats[0].getAverage() : highest;
+	        	weightVectorsGhosts.get(i)[weightVectorsGhosts.get(i).length-1] =  -stats[0].getAverage();
+	        	currentWeightGhosts++;
+	        	System.out.println("highest: "  + highest);
+	        }
+	        System.out.println("generation " + generations);
+	        WeightSort.sort(weightVectorsGhosts);
+	        GeneticOperators.evolve(weightVectorsGhosts);
+	        System.out.println("size: " + weightVectorsGhosts.size());
+	        try {
+				Thread.sleep(2000);
+			} catch (InterruptedException e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+			}
+	        generations++;
+        }
+        WeightIO.writeWeights(weightVectorsGhosts, "trainedGhostWeights");       
+       */
         
        
-   	     
-        */
-       
-       weightVectors = readWeights("trainedweights");
-       currentWeight=0;
-       System.out.println("current weight fitness: " + weightVectors.get(currentWeight)[weightVectors.get(currentWeight).length-1] );
-       po.runGame(new MyPacManVanilla(), new POCommGhosts(50), true, 40);
+       //run a game using both the neural net pacman and the neural net ghosts
+       po.runGame(new MyNeuralPacMan(), NeuralGhosts.neuralGhostController(), true, 40);
        
       
-        
+       
     }
     
-    /*
-     * read the weight Vectors for the EA from file
-     */
-    @SuppressWarnings("unchecked")
-	public static List<double[]> readWeights(String s) {
-    	List<double[]> weightList= new ArrayList<double[]>();
-        try
-        {
-            FileInputStream fis = new FileInputStream(s);
-            ObjectInputStream ois = new ObjectInputStream(fis);
-            weightList = (List<double[]>) ois.readObject();
-            ois.close();
-            fis.close();
-         }catch(IOException ioe){
-             ioe.printStackTrace();
-             return null;
-          }catch(ClassNotFoundException c){
-             System.out.println("Class not found");
-             c.printStackTrace();
-             return null;
-          }
-       
-        return weightList;
-    }
-	
-	
-	/*
-	 * write the weight vectors to file
-	 */
-	public static void writeWeights(List<double[]> weightVectors, String s){
-		
-	    try{
-	    FileOutputStream fos= new FileOutputStream(s);
-	    ObjectOutputStream oos= new ObjectOutputStream(fos);
-	    oos.writeObject(weightVectors);
-	    System.out.println("writing weights");
-	    oos.close();
-	    fos.close();
-	    }catch(IOException ioe){
-	    	ioe.printStackTrace();
-	    }
-	 }
 
 	
 	
@@ -143,7 +149,7 @@ public class MyPacManVanilla extends PacmanController {
     	// get all possible moves at the queried position
     	MOVE[] myMoves = game.getPossibleMoves(myNodeIndex);
     	
-    	double weights[] = MyPacManVanilla.weightVectors.get(currentWeight);
+    	double weights[] = WeightIO.readWeights("trainedWeights").get(0);
     	Network net = new Network(7, 12, weights);
     	double moveValue[] = new double[myMoves.length];
     	//moveValue[moveValue.length-1] = Double.MIN_VALUE;
@@ -175,7 +181,9 @@ public class MyPacManVanilla extends PacmanController {
 				ghostIndex++;
 			}
     		switch(tmp) {
+    			//for each move, calculate input and evaluate
     			case UP:
+    				//reset input variables for new move evaluation
     				nPillsInDir = 0;
     				distToJunct = 0;
     				nJunctsinDir = 0;

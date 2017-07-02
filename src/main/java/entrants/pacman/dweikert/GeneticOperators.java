@@ -3,9 +3,16 @@ package entrants.pacman.dweikert;
 import java.util.List;
 import java.util.concurrent.ThreadLocalRandom;
 
+/*
+ * Helper class for evolving Weights
+ */
 public class GeneticOperators {
 	
-	
+	/*
+	 * Evolves the given List of Weight Vector genomes by
+	 * replacing the 30 worst individuals with the children of the 30 best individuals
+	 * Mutates each gene of each child with 10% chance.
+	 */
 	public static void evolve(List<double[]> weightVectors) {
 		int nWeightVectors = weightVectors.size();
 		
@@ -53,4 +60,5 @@ public class GeneticOperators {
 		}
 		
 	}
+	
 }

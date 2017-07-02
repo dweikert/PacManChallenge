@@ -1,22 +1,16 @@
 package entrants.ghosts.dweikert;
 
-import pacman.controllers.IndividualGhostController;
-import pacman.controllers.MASController;
+
 import pacman.game.Constants;
-import pacman.game.Game;
 
 /**
  * Created by Piers on 11/11/2015.
  */
-public class Blinky extends IndividualGhostController {
+public class Blinky extends NeuralGhosts {
 
 
     public Blinky() {
-        super(Constants.GHOST.BLINKY);
+        super(Constants.GHOST.BLINKY, 50);
     }
 
-    @Override
-    public Constants.MOVE getMove(Game game, long timeDue) {
-        return null;
-    }
 }
