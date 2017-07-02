@@ -29,10 +29,10 @@ import entrants.pacman.dweikert.WeightIO;
 
 public class NeuralGhosts extends IndividualGhostController {
 	static int currentWeight = 0; 
-    static List<double[]> weightVectors;
-    private final static int PILL_PROXIMITY = 15;        //if Ms Pac-Man is this close to a power pill, back away
+    static List<double[]> weightVectors; //the list of weight vectors for the network
+    private final static int PILL_PROXIMITY = 15; //proximity threshold for power pills
     Random rnd = new Random();
-    private int TICK_THRESHOLD;
+    private int TICK_THRESHOLD; //used to remove outdated data (e.g. pacman position)
     private int lastPacmanIndex = -1;
     private int tickSeen = -1;
     static EnumMap<Constants.GHOST, IndividualGhostController> map;

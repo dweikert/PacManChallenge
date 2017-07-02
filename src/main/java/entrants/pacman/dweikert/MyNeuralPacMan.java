@@ -24,9 +24,10 @@ import pacman.game.util.Stats;
 import pacman.game.Game;
 
 /*
- * This is the class you need to modify for your entry. In particular, you need to
- * fill in the getMove() method. Any additional classes you write should either
- * be placed in this package or sub-packages (e.g., entrants.pacman.username).
+ *To start a game using neural PAcman and neural ghosts:
+ *---------
+ *po.runGame(new MyNeuralPacMan(), NeuralGhosts.neuralGhostController(), true, 40);
+ *---------
  */
 
 
@@ -90,14 +91,14 @@ public class MyNeuralPacMan extends PacmanController {
         generations = 0;
         weightVectorsPacman = WeightIO.readWeights("trainedweights");
         weightVectorsGhosts = WeightIO.readWeights("trainedghostweights");
-        while(generations < 20) {
+        while(generations < 100) {
 	        double highest = -9999;
 	        currentWeightPacman = 0;
 	        currentWeightGhosts = 0;
 	        for(int i = 0; i<weightVectorsGhosts.size();i++){
 	        	Stats stats[];        	
 	        	String s = "testing weight " + i + " gen " + generations;
-	        	stats = po.runExperiment(new MyPacManVanilla(), NeuralGhosts.neuralGhostController(), 3, s);
+	        	stats = po.runExperiment(new MyPacManVanilla(), NeuralGhosts.neuralGhostController(), 10, s);
 	        	System.out.println("Average: " + -stats[0].getAverage());
 	        	
 	        	highest = (-stats[0].getAverage() > highest) ? -stats[0].getAverage() : highest;
@@ -119,8 +120,9 @@ public class MyNeuralPacMan extends PacmanController {
         }
         WeightIO.writeWeights(weightVectorsGhosts, "trainedGhostWeights");       
        */
-        
-       
+       Stats stats[];    
+       //stats = po.runExperiment(new MyNeuralPacMan(), new POCommGhosts(), 10, "");
+       //System.out.println("Average: " + stats[0].getAverage());
        //run a game using both the neural net pacman and the neural net ghosts
        po.runGame(new MyNeuralPacMan(), NeuralGhosts.neuralGhostController(), true, 40);
        
