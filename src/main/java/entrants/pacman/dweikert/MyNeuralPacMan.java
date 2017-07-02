@@ -151,7 +151,7 @@ public class MyNeuralPacMan extends PacmanController {
     	// get all possible moves at the queried position
     	MOVE[] myMoves = game.getPossibleMoves(myNodeIndex);
     	
-    	double weights[] = WeightIO.readWeights("trainedWeights").get(0);
+    	double weights[] = WeightIO.readWeights("trainedweights").get(0);
     	Network net = new Network(7, 12, weights);
     	double moveValue[] = new double[myMoves.length];
     	//moveValue[moveValue.length-1] = Double.MIN_VALUE;
